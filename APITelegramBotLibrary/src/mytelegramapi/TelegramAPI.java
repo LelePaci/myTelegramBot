@@ -3,6 +3,8 @@ package mytelegramapi;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 import org.json.*;
 
@@ -19,10 +21,6 @@ public class TelegramAPI {
     public TelegramAPI(String token) throws IOException {
         this.baseURL = "https://api.telegram.org/bot";
         this.token = token;
-
-        getUpdates();
-
-        //System.out.println(jsonString);
     }
 
     private String getStream(String method) throws MalformedURLException, IOException {
@@ -32,16 +30,14 @@ public class TelegramAPI {
         return scanner.next();
     }
 
-    public Update getUpdates() throws IOException {
-        
+    public List<Update> getUpdates() throws IOException {
+        List<Update> upds = new ArrayList();
         String jsonString = getStream("getUpdates");
         JSONObject obj = new JSONObject(jsonString);
         JSONArray result = obj.getJSONArray("result");
         for (int i = 0; i < result.length(); i++) {
-            System.out.println(result.getJSONObject(i).getJSONObject("message"));
-            Update m = new Update(result.getJSONObject(i).getJSONObject("message"));
+            upds.add(new Update(result.getJSONObject(i).getJSONObject("message")));
         }
-        
-        return null;
+        return upds;
     }
 }
