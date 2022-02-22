@@ -1,2 +1,2 @@
 # myTelegramBot
-Progetto scolastico: creazione di un bot Telegram 
+Progetto scolastico: creazione di una libreria per gestire un bot Telegram 
