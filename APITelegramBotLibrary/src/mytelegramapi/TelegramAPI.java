@@ -36,18 +36,16 @@ public class TelegramAPI {
         return baseURL;
     }
 
-    public void getMe() throws IOException {
+    public Me getMe() throws IOException {
         String jsonString = getStream("getMe");
-        System.out.println(jsonString);
+        return new Me(new JSONObject(jsonString).getJSONObject("result"));
     }
 
     public List<Update> getUpdates() throws IOException {
         List<Update> upds = new ArrayList();
         String jsonString = getStream("getUpdates");
-        JSONObject obj = new JSONObject(jsonString);
-        JSONArray result = obj.getJSONArray("result");
+        JSONArray result = new JSONObject(jsonString).getJSONArray("result");
         for (int i = 0; i < result.length(); i++) {
-            //System.out.println(result.getJSONObject(i));
             upds.add(new Update(result.getJSONObject(i)));
         }
         return upds;
@@ -55,10 +53,8 @@ public class TelegramAPI {
 
     public Update getFirstUpdate() throws IOException {
         Update u = getUpdates().get(0);
-        System.out.println("---------------------" + u);
         int newOffset = u.update_id + 1;
         getStream("getUpdates?offset=" + newOffset);
-        return null;
+        return u;
     }
-
 }

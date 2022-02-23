@@ -58,9 +58,9 @@ public class Message {
     @Override
     public String toString() {
         String toReturn = "message_id: " + message_id + "\n"
-                + "from" + from.toString() + "\n"
-                + "chat" + chat.toString() + "\n"
-                + "date" + date + "\n"
+                + "from: " + from.toString() + "\n"
+                + "chat: " + chat.toString() + "\n"
+                + "date: " + date + "\n"
                 + "text: " + text + "\n";
         if (entities != null) {
             for (Entity entitie : entities) {
