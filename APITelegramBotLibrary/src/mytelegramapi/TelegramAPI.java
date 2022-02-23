@@ -57,4 +57,9 @@ public class TelegramAPI {
         getStream("getUpdates?offset=" + newOffset);
         return u;
     }
+    
+    public Chat getChatByID(int id) throws IOException{
+        String jsonString = getStream("getChat?chat_id="+ id);
+        return new Chat(new JSONObject(jsonString).getJSONObject("result"));
+    }
 }
