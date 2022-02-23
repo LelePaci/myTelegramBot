@@ -50,7 +50,7 @@ public class TelegramAPI {
         }
         return upds;
     }
-
+    
     public Update getFirstUpdate() throws IOException {
         Update u = getUpdates().get(0);
         int newOffset = u.update_id + 1;
@@ -58,8 +58,17 @@ public class TelegramAPI {
         return u;
     }
     
+    public int getUpdatesLenght() throws IOException{
+        return getUpdates().size();
+    }
+    
     public Chat getChatByID(int id) throws IOException{
         String jsonString = getStream("getChat?chat_id="+ id);
         return new Chat(new JSONObject(jsonString).getJSONObject("result"));
+    }
+    
+    public void sendMessage(Chat chat, String text) throws IOException{
+        String reply = text.replaceAll("\\s+", "%20");
+        getStream("sendMessage?chat_id=" + chat.id + "&text="+ reply);
     }
 }
