@@ -53,10 +53,11 @@ public class TelegramAPI {
         return upds;
     }
 
-    public Message getFirstUpdate() throws IOException {
-        //Message u = getUpdates().get(0);
-        //int newOffset = u.update_id + 1;
-        //getStream("getUpdates?offset=" + newOffset);
+    public Update getFirstUpdate() throws IOException {
+        Update u = getUpdates().get(0);
+        System.out.println("---------------------" + u);
+        int newOffset = u.update_id + 1;
+        getStream("getUpdates?offset=" + newOffset);
         return null;
     }
 

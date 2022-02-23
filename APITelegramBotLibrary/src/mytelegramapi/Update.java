@@ -25,5 +25,4 @@ public class Update {
         return "update_id: " + update_id + "\n"
                 + "message: " + message.toString();
     }
-
 }
