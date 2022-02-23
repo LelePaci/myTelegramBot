@@ -16,18 +16,29 @@ public class TelegramAPI {
 
     private String token;
     private Scanner scanner;
+    private String telegramURL;
     private String baseURL;
 
     public TelegramAPI(String token) throws IOException {
-        this.baseURL = "https://api.telegram.org/bot";
+        this.telegramURL = "https://api.telegram.org/bot";
         this.token = token;
+        this.baseURL = telegramURL + token + "/";
     }
 
     private String getStream(String method) throws MalformedURLException, IOException {
-        URL url = new URL(baseURL + token + "/" + method);
+        URL url = new URL(baseURL + method);
         this.scanner = new Scanner(url.openStream());
         scanner.useDelimiter("\u001a");
         return scanner.next();
+    }
+
+    public String getURL() {
+        return baseURL;
+    }
+
+    public void getMe() throws IOException {
+        String jsonString = getStream("getMe");
+        System.out.println(jsonString);
     }
 
     public List<Update> getUpdates() throws IOException {
@@ -36,8 +47,17 @@ public class TelegramAPI {
         JSONObject obj = new JSONObject(jsonString);
         JSONArray result = obj.getJSONArray("result");
         for (int i = 0; i < result.length(); i++) {
-            upds.add(new Update(result.getJSONObject(i).getJSONObject("message")));
+            //System.out.println(result.getJSONObject(i));
+            upds.add(new Update(result.getJSONObject(i)));
         }
         return upds;
     }
+
+    public Message getFirstUpdate() throws IOException {
+        //Message u = getUpdates().get(0);
+        //int newOffset = u.update_id + 1;
+        //getStream("getUpdates?offset=" + newOffset);
+        return null;
+    }
+
 }
