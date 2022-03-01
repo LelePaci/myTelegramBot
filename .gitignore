@@ -24,3 +24,5 @@ hs_err_pid*
 /BotPubblicita/nbproject/private/
 /BotPubblicita/build/
 BotPubblicita/token.txt
+/APITelegramBotLibrary/dist/
+BotPubblicita/request.xml
