@@ -3,6 +3,8 @@ package api.telegram;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -18,6 +20,9 @@ public class TelegramAPI {
     private Scanner scanner;
     private String telegramURL;
     private String baseURL;
+    
+    private int offset = 0;
+    
 
     public TelegramAPI(String token) throws IOException {
         this.telegramURL = "https://api.telegram.org/bot";
@@ -43,32 +48,26 @@ public class TelegramAPI {
 
     public List<Update> getUpdates() throws IOException {
         List<Update> upds = new ArrayList();
-        String jsonString = getStream("getUpdates");
+        String jsonString = getStream("getUpdates?offset=" + offset);
         JSONArray result = new JSONObject(jsonString).getJSONArray("result");
         for (int i = 0; i < result.length(); i++) {
             upds.add(new Update(result.getJSONObject(i)));
         }
         return upds;
     }
-    
-    public Update getFirstUpdate() throws IOException {
-        Update u = getUpdates().get(0);
-        int newOffset = u.update_id + 1;
-        getStream("getUpdates?offset=" + newOffset);
-        return u;
+
+    public void changeOffset(int offset) throws IOException {
+        //getStream("getUpdates?offset=" + offset);
+        this.offset = offset;
     }
-    
-    public int getUpdatesLenght() throws IOException{
-        return getUpdates().size();
-    }
-    
-    public Chat getChatByID(int id) throws IOException{
-        String jsonString = getStream("getChat?chat_id="+ id);
+
+    public Chat getChatByID(int id) throws IOException {
+        String jsonString = getStream("getChat?chat_id=" + id);
         return new Chat(new JSONObject(jsonString).getJSONObject("result"));
     }
-    
-    public void sendMessage(Chat chat, String text) throws IOException{
-        String reply = text.replaceAll("\\s+", "%20");
-        getStream("sendMessage?chat_id=" + chat.id + "&text="+ reply);
+
+    public void sendMessage(Chat chat, String text) throws IOException {
+        getStream("sendMessage?chat_id=" + chat.id + "&text=" + URLEncoder.encode(text, StandardCharsets.UTF_8));
+        System.out.println("sendMessage?chat_id=" + chat.id + "&text=" + URLEncoder.encode(text, StandardCharsets.UTF_8));
     }
 }
