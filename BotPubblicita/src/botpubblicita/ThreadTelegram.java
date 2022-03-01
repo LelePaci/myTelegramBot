@@ -5,9 +5,10 @@
  */
 package botpubblicita;
 
-import api.telegram.TelegramAPI;
-import api.telegram.Update;
+import api.openstreetmap.OpenStreetMapAPI;
+import api.telegram.*;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -36,10 +37,11 @@ public class ThreadTelegram extends Thread {
             try {
                 List<Update> updates = api.getUpdates();
                 if (updates.size() > 0) {
-                    int lastOffset = updates.get(updates.size() - 1).update_id;
+                    long lastOffset = updates.get(updates.size() - 1).update_id;
                     api.changeOffset(lastOffset + 1);
                     for (int i = 0; i < updates.size(); i++) {
-                        System.out.println(updates.get(i).message.text);
+                        doSomething(updates.get(i).message);
+
                     }
                 }
 
@@ -47,6 +49,22 @@ public class ThreadTelegram extends Thread {
             } catch (InterruptedException | IOException ex) {
                 Logger.getLogger(ThreadTelegram.class.getName()).log(Level.SEVERE, null, ex);
             }
+        }
+    }
+
+    private void doSomething(Message message) {
+        String text = message.text;
+        if (text.startsWith("/")) {
+            System.out.println(text.indexOf(" "));
+            OpenStreetMapAPI map = map = new OpenStreetMapAPI();
+            try {
+                System.out.println(map.searchPlace("merone via appiani"));
+            } catch (MalformedURLException ex) {
+                Logger.getLogger(ThreadTelegram.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                Logger.getLogger(ThreadTelegram.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
         }
     }
 }

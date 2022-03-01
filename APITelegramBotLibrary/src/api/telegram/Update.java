@@ -12,11 +12,11 @@ import org.json.JSONObject;
  */
 public class Update {
 
-    public Integer update_id;
+    public Long update_id;
     public Message message;
 
     public Update(JSONObject obj) {
-        update_id = obj.has("update_id") ? obj.getInt("update_id") : null;
+        update_id = obj.has("update_id") ? obj.getLong("update_id") : null;
         message = obj.has("message") ? new Message(obj.getJSONObject("message")) : null;
     }
 

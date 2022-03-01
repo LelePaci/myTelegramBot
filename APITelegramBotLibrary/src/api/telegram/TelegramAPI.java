@@ -21,7 +21,7 @@ public class TelegramAPI {
     private String telegramURL;
     private String baseURL;
     
-    private int offset = 0;
+    private long offset = 0;
     
 
     public TelegramAPI(String token) throws IOException {
@@ -56,7 +56,7 @@ public class TelegramAPI {
         return upds;
     }
 
-    public void changeOffset(int offset) throws IOException {
+    public void changeOffset(long offset) throws IOException {
         //getStream("getUpdates?offset=" + offset);
         this.offset = offset;
     }
