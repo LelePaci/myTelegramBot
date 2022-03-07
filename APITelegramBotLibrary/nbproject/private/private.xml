@@ -4,6 +4,8 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/D:/Users/Emanuele%20Paci/Documents/GitHub/myTelegramBot/APITelegramBotLibrary/src/api/telegram/TelegramAPI.java</file>
+            <file>file:/D:/Users/Emanuele%20Paci/Documents/GitHub/myTelegramBot/APITelegramBotLibrary/src/api/openstreetmap/SearchResults.java</file>
+            <file>file:/D:/Users/Emanuele%20Paci/Documents/GitHub/myTelegramBot/APITelegramBotLibrary/src/api/openstreetmap/Place.java</file>
             <file>file:/D:/Users/Emanuele%20Paci/Documents/GitHub/myTelegramBot/APITelegramBotLibrary/src/api/openstreetmap/OpenStreetMapAPI.java</file>
         </group>
     </open-files>

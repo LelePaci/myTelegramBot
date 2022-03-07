@@ -18,20 +18,20 @@ public class Place {
 //    public String at_osmType;
 //    public String at_osmID;
 //    public String at_placeRank;
-    public String village;
-    public String county;
-    public String state;
-    public String postcode;
-    public String country;
-    public String country_code;
-    public String railway;
-    public String road;
-    public String amenity;
-    public String city;
+    private String village;
+    private String county;
+    private String state;
+    private String postcode;
+    private String country;
+    private String country_code;
+    private String railway;
+    private String road;
+    private String amenity;
+    private String city;
+    private double lat;
+    private double lon;
 
     public Place(Element e) {
-
-        
         village = e.getElementsByTagName("village").item(0) != null ? e.getElementsByTagName("village").item(0).getTextContent() : null;
         county = e.getElementsByTagName("county").item(0) != null ? e.getElementsByTagName("county").item(0).getTextContent() : null;
         state = e.getElementsByTagName("state").item(0) != null ? e.getElementsByTagName("state").item(0).getTextContent() : null;
@@ -42,6 +42,56 @@ public class Place {
         road = e.getElementsByTagName("road").item(0) != null ? e.getElementsByTagName("road").item(0).getTextContent() : null;
         amenity = e.getElementsByTagName("amenity").item(0) != null ? e.getElementsByTagName("amenity").item(0).getTextContent() : null;
         city = e.getElementsByTagName("city").item(0) != null ? e.getElementsByTagName("city").item(0).getTextContent() : null;
+        lat = e.getAttribute("lat") != null ? Double.parseDouble(e.getAttribute("lat")) : null;
+        lon = e.getAttribute("lon") != null ? Double.parseDouble(e.getAttribute("lon")) : null;
+    }
+
+    public String getVillage() {
+        return village;
+    }
+
+    public String getCounty() {
+        return county;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public String getPostcode() {
+        return postcode;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public String getCountry_code() {
+        return country_code;
+    }
+
+    public String getRailway() {
+        return railway;
+    }
+
+    public String getRoad() {
+        return road;
+    }
+
+    public String getAmenity() {
+        return amenity;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public double getLat() {
+        return lat;
+    }
+
+    public double getLon() {
+        return lon;
     }
 
     @Override
@@ -55,6 +105,8 @@ public class Place {
                 + "railway: " + railway + "\n"
                 + "road: " + road + "\n"
                 + "amenity: " + amenity + "\n"
-                + "city: " + city + "\n";
+                + "city: " + city + "\n"
+                + "lat: " + lat + "\n"
+                +"lon: " + lon + "\n";
     }
 }

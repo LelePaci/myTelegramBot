@@ -9,11 +9,9 @@ import api.openstreetmap.OpenStreetMapAPI;
 import api.openstreetmap.SearchResults;
 import api.telegram.*;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.naming.directory.SearchResult;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 
@@ -44,7 +42,10 @@ public class ThreadTelegram extends Thread {
                     long lastOffset = updates.get(updates.size() - 1).update_id;
                     api.changeOffset(lastOffset + 1);
                     for (int i = 0; i < updates.size(); i++) {
-                        doSomething(updates.get(i).message);
+                        if (updates.get(i).message.text != null) {
+                            readMessages(updates.get(i).message);
+                        }
+                        
                     }
                 }
 
@@ -55,23 +56,36 @@ public class ThreadTelegram extends Thread {
         }
     }
 
-    private void doSomething(Message message) {
+    private void readMessages(Message message) {
 
         String text = message.text;
 
         if (text.startsWith("/")) {
             int firstSpace = text.indexOf(" ");
             if (firstSpace != -1) {
-                OpenStreetMapAPI map = new OpenStreetMapAPI();
-                text = text.substring(firstSpace + 1, text.length());
-                try {
-                    SearchResults sr =map.searchPlace(text);
-                    for (int i = 0; i < sr.places.size(); i++) {
-                         api.sendMessage(message.chat, sr.places.get(i).toString());
-                    }
-                } catch (ParserConfigurationException | SAXException | IOException ex) {
-                    Logger.getLogger(ThreadTelegram.class.getName()).log(Level.SEVERE, null, ex);
+                String cmd = text.substring(1, firstSpace);
+                switch (cmd) {
+                    case "citta":
+                        OpenStreetMapAPI map = new OpenStreetMapAPI();
+                        text = text.substring(firstSpace + 1, text.length());
+                        System.out.println("text: " + text);
+                        try {
+                            SearchResults sr = map.searchPlace(text);
+                            if (sr.places != null) {
+                                for (int i = 0; i < sr.places.size(); i++) {
+                                    api.sendMessage(message.chat, sr.places.get(i).toString());
+                                }
+                            } else {
+                                api.sendMessage(message.chat, "Nessun risultato trovato");
+                            }
+
+                        } catch (ParserConfigurationException | SAXException | IOException ex) {
+                            Logger.getLogger(ThreadTelegram.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        break;
+                    default:
                 }
+
             } else {
                 try {
                     api.sendMessage(message.chat, "Inserisci una località");
@@ -80,6 +94,5 @@ public class ThreadTelegram extends Thread {
                 }
             }
         }
-
     }
 }
