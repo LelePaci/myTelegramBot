@@ -28,8 +28,8 @@ public class Place {
     private String road;
     private String amenity;
     private String city;
-    private double lat;
-    private double lon;
+    private String lat;
+    private String lon;
 
     public Place(Element e) {
         village = e.getElementsByTagName("village").item(0) != null ? e.getElementsByTagName("village").item(0).getTextContent() : null;
@@ -42,8 +42,8 @@ public class Place {
         road = e.getElementsByTagName("road").item(0) != null ? e.getElementsByTagName("road").item(0).getTextContent() : null;
         amenity = e.getElementsByTagName("amenity").item(0) != null ? e.getElementsByTagName("amenity").item(0).getTextContent() : null;
         city = e.getElementsByTagName("city").item(0) != null ? e.getElementsByTagName("city").item(0).getTextContent() : null;
-        lat = e.getAttribute("lat") != null ? Double.parseDouble(e.getAttribute("lat")) : null;
-        lon = e.getAttribute("lon") != null ? Double.parseDouble(e.getAttribute("lon")) : null;
+        lat = e.hasAttribute("lat") && e.getAttribute("lat") != null ? e.getAttribute("lat") : null;
+        lon = e.hasAttribute("lon") && e.getAttribute("lon") != null? e.getAttribute("lon") : null;
     }
 
     public String getVillage() {
@@ -86,11 +86,11 @@ public class Place {
         return city;
     }
 
-    public double getLat() {
+    public String getLat() {
         return lat;
     }
 
-    public double getLon() {
+    public String getLon() {
         return lon;
     }
 
@@ -107,6 +107,6 @@ public class Place {
                 + "amenity: " + amenity + "\n"
                 + "city: " + city + "\n"
                 + "lat: " + lat + "\n"
-                +"lon: " + lon + "\n";
+                + "lon: " + lon + "\n";
     }
 }
