@@ -50,10 +50,8 @@ public class ThreadTelegram extends Thread {
                         if (updates.get(i).message.text != null) {
                             readMessages(updates.get(i).message);
                         }
-
                     }
                 }
-
                 Thread.sleep(100);
             } catch (InterruptedException | IOException ex) {
                 Logger.getLogger(ThreadTelegram.class.getName()).log(Level.SEVERE, null, ex);
@@ -62,9 +60,7 @@ public class ThreadTelegram extends Thread {
     }
 
     private void readMessages(Message message) {
-
         String text = message.text;
-
         if (text.startsWith("/")) {
             int firstSpace = text.indexOf(" ");
             if (firstSpace != -1) {
@@ -87,14 +83,12 @@ public class ThreadTelegram extends Thread {
                             } else {
                                 api.sendMessage(message.chat, "Nessun risultato trovato");
                             }
-
                         } catch (ParserConfigurationException | SAXException | IOException ex) {
                             Logger.getLogger(ThreadTelegram.class.getName()).log(Level.SEVERE, null, ex);
                         }
                         break;
                     default:
                 }
-
             } else {
                 try {
                     api.sendMessage(message.chat, "Inserisci una località");
