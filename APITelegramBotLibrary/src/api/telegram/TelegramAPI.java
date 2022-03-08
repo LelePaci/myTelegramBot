@@ -20,9 +20,8 @@ public class TelegramAPI {
     private Scanner scanner;
     private String telegramURL;
     private String baseURL;
-    
+
     private long offset = 0;
-    
 
     public TelegramAPI(String token) throws IOException {
         this.telegramURL = "https://api.telegram.org/bot";
@@ -68,5 +67,9 @@ public class TelegramAPI {
 
     public void sendMessage(Chat chat, String text) throws IOException {
         getStream("sendMessage?chat_id=" + chat.id + "&text=" + URLEncoder.encode(text, StandardCharsets.UTF_8));
+    }
+
+    public void sendPhoto(Chat chat, String photo, String caption) throws IOException {
+        getStream("sendPhoto?chat_id=" + chat.id + "&photo=" + URLEncoder.encode(photo, StandardCharsets.UTF_8) + "&caption=" + URLEncoder.encode(caption, StandardCharsets.UTF_8));
     }
 }

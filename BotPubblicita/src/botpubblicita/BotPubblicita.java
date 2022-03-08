@@ -22,12 +22,11 @@ import java.util.logging.Logger;
 public class BotPubblicita {
 
     public static void main(String[] args) {
-        
-        
+
         ThreadTelegram telegram;
         try {
             Tokens tokens = new Tokens();
-            telegram = new ThreadTelegram(tokens.getTelegram());
+            telegram = new ThreadTelegram(tokens);
             telegram.start();
         } catch (FileNotFoundException ex) {
             Logger.getLogger(BotPubblicita.class.getName()).log(Level.SEVERE, null, ex);

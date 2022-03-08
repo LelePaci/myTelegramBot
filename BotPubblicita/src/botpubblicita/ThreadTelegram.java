@@ -9,7 +9,10 @@ import api.openstreetmap.OpenStreetMapAPI;
 import api.openstreetmap.SearchResults;
 import api.telegram.*;
 import api.utils.*;
+import api.mapquest.*;
+import api.openstreetmap.*;
 import java.io.IOException;
+import java.net.URL;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -26,16 +29,18 @@ public class ThreadTelegram extends Thread {
     private boolean running = false;
     private MyFile fileUsers;
     private UserList userList;
+    private MapQuestAPI mapQuest;
 
-    public ThreadTelegram(String token) {
+    public ThreadTelegram(Tokens token) {
         try {
-            api = new TelegramAPI(token);
+            api = new TelegramAPI(token.getTelegram());
             running = true;
             fileUsers = new MyFile("users.csv");
             if (!fileUsers.exists()) {
                 fileUsers.createFile();
             }
             userList = new UserList(fileUsers);
+            mapQuest = new MapQuestAPI(token.getMapQuest());
         } catch (IOException ex) {
             Logger.getLogger(ThreadTelegram.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -81,12 +86,16 @@ public class ThreadTelegram extends Thread {
                         try {
                             SearchResults sr = map.searchPlace(text);
                             if (sr.places != null) {
+                                Place place = sr.places.get(0);
                                 if (!userList.userExists(message.chat)) {
-                                    userList.addUser(message.chat, sr.places.get(0));
-                                    api.sendMessage(message.chat, "Utente registrato");
+                                    userList.addUser(message.chat, place);
+                                    mapQuest.getImage(place.getLat(), place.getLon());
+                                    //api.sendMessage(message.chat, "Utente registrato");
                                 } else {
                                     userList.updateUser(message.chat, sr.places.get(0));
                                     api.sendMessage(message.chat, "Utente modificato");
+                                    URL photo = mapQuest.getImage(place.getLat(), place.getLon());
+                                    api.sendPhoto(message.chat, photo.toString(), "Risultato trovato");
                                 }
                             } else {
                                 api.sendMessage(message.chat, "Nessun risultato trovato");
