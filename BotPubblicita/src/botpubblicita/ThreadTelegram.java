@@ -6,7 +6,6 @@
 package botpubblicita;
 
 import api.openstreetmap.OpenStreetMapAPI;
-import api.openstreetmap.Place;
 import api.openstreetmap.SearchResults;
 import api.telegram.*;
 import api.utils.*;

@@ -7,6 +7,7 @@ package botpubblicita;
 
 import api.telegram.Chat;
 import api.telegram.TelegramAPI;
+import api.utils.Tokens;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -21,10 +22,12 @@ import java.util.logging.Logger;
 public class BotPubblicita {
 
     public static void main(String[] args) {
-
+        
+        
         ThreadTelegram telegram;
         try {
-            telegram = new ThreadTelegram(new Scanner(new File("token.txt")).next());
+            Tokens tokens = new Tokens();
+            telegram = new ThreadTelegram(tokens.getTelegram());
             telegram.start();
         } catch (FileNotFoundException ex) {
             Logger.getLogger(BotPubblicita.class.getName()).log(Level.SEVERE, null, ex);
