@@ -9,8 +9,7 @@ import api.openstreetmap.OpenStreetMapAPI;
 import api.openstreetmap.Place;
 import api.openstreetmap.SearchResults;
 import api.telegram.*;
-import api.utils.MyFile;
-import java.io.FileNotFoundException;
+import api.utils.*;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
@@ -27,12 +26,17 @@ public class ThreadTelegram extends Thread {
     private TelegramAPI api = null;
     private boolean running = false;
     private MyFile fileUsers;
+    private UserList userList;
 
     public ThreadTelegram(String token) {
         try {
             api = new TelegramAPI(token);
             running = true;
             fileUsers = new MyFile("users.csv");
+            if (!fileUsers.exists()) {
+                fileUsers.createFile();
+            }
+            userList = new UserList(fileUsers);
         } catch (IOException ex) {
             Logger.getLogger(ThreadTelegram.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -47,8 +51,13 @@ public class ThreadTelegram extends Thread {
                     long lastOffset = updates.get(updates.size() - 1).update_id;
                     api.changeOffset(lastOffset + 1);
                     for (int i = 0; i < updates.size(); i++) {
-                        if (updates.get(i).message.text != null) {
-                            readMessages(updates.get(i).message);
+                        try {
+                            if (updates.get(i).message.text != null) {
+                                readMessages(updates.get(i).message);
+                            }
+                        } catch (Exception e) {
+                            System.out.println(e);
+                            api.sendMessage(updates.get(i).message.chat, "Qualcosa è andato storto, riprova");
                         }
                     }
                 }
@@ -73,11 +82,11 @@ public class ThreadTelegram extends Thread {
                         try {
                             SearchResults sr = map.searchPlace(text);
                             if (sr.places != null) {
-                                if (!recordExists(message.chat)) {
-                                    saveRecord(message.chat, sr.places.get(0));
+                                if (!userList.userExists(message.chat)) {
+                                    userList.addUser(message.chat, sr.places.get(0));
                                     api.sendMessage(message.chat, "Utente registrato");
                                 } else {
-                                    updateRecord(message.chat, sr.places.get(0));
+                                    userList.updateUser(message.chat, sr.places.get(0));
                                     api.sendMessage(message.chat, "Utente modificato");
                                 }
                             } else {
@@ -91,51 +100,11 @@ public class ThreadTelegram extends Thread {
                 }
             } else {
                 try {
-                    api.sendMessage(message.chat, "Inserisci una località");
+                    api.sendMessage(message.chat, "Comando non valido");
                 } catch (IOException ex) {
                     Logger.getLogger(ThreadTelegram.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-        }
-    }
-
-    private boolean recordExists(Chat chat) {
-        try {
-            String[] lines = fileUsers.read();
-            for (int i = 0; i < lines.length; i++) {
-                int id = Integer.parseInt(lines[i].substring(0, lines[i].indexOf(";")));
-                if (id == chat.id) {
-                    return true;
-                }
-            }
-        } catch (IOException ex) {
-            Logger.getLogger(ThreadTelegram.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return false;
-    }
-
-    private void saveRecord(Chat chat, Place place) {
-        String user = MyFile.getCSV(chat.id.toString(), chat.first_name, place.getLat(), place.getLon());
-        try {
-            fileUsers.append(user);
-        } catch (IOException ex) {
-            Logger.getLogger(ThreadTelegram.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    private void updateRecord(Chat chat, Place place) {
-        try {
-            String[] lines = fileUsers.read();
-            for (int i = 0; i < lines.length; i++) {
-                int id = Integer.parseInt(lines[i].substring(0, lines[i].indexOf(";")));
-                if (id == chat.id) {
-                    lines[i] = MyFile.getCSV(chat.id.toString(), chat.first_name, place.getLat(), place.getLon());
-                    break;
-                }
-            }
-            fileUsers.write(lines);
-        } catch (IOException ex) {
-            Logger.getLogger(ThreadTelegram.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }

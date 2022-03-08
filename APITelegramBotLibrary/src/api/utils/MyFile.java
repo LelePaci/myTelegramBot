@@ -34,6 +34,14 @@ public class MyFile {
     public File getFile() {
         return file;
     }
+    
+    public boolean exists(){
+        return file.exists();
+    }
+    
+    public void createFile() throws IOException{
+        file.createNewFile();
+    }
 
     public synchronized void write(String s) throws IOException {
         BufferedWriter bw = new BufferedWriter(new FileWriter(file));

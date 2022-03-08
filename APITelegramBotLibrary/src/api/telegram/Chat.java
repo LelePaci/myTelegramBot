@@ -12,7 +12,7 @@ import org.json.JSONObject;
  */
 public class Chat {
 
-    public Integer id;
+    public Long id;
     public Boolean is_bot;
     public String first_name;
     public String username;
@@ -29,7 +29,7 @@ public class Chat {
     }
 
     public Chat(JSONObject obj) {
-        id = obj.has("id") ? obj.getInt("id") : null;
+        id = obj.has("id") ? obj.getLong("id") : null;
         is_bot = obj.has("is_bot") ? obj.getBoolean("is_bot") : null;
         first_name = obj.has("first_name") ? obj.getString("first_name") : null;
         username = obj.has("username") ? obj.getString("username") : null;
@@ -37,7 +37,7 @@ public class Chat {
         photo = obj.has("photo") ? new Photo(obj.getJSONObject("photo")) : null;
     }
 
-    public Chat(Integer id, Boolean is_bot, String first_name, String username, String type) {
+    public Chat(Long id, Boolean is_bot, String first_name, String username, String type) {
         this.id = id;
         this.is_bot = is_bot;
         this.first_name = first_name;
