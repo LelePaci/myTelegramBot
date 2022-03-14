@@ -146,44 +146,46 @@ public class ThreadTelegram extends Thread {
             if (query.data.equals("conf")) {
                 api.sendMessage(query.message.chat, "Utente registrato");
             }
-            if (query.data.equals("succ")) {
-                SearchResults sr = OsmAPI.searchPlace(u.getPlaceName());
-                if (sr.places != null) {
-                    nPos++;
-                    if (nPos >= 0 && nPos < sr.places.size()) {
-                        Place place = sr.places.get(nPos++);
-                        String msg = "Risultato " + (u.getnLoc() + 1) + " di " + sr.places.size() + " risultati trovati";
-                        URL photo = mapQuest.getImage(place.getLat(), place.getLon());
-                        ReplyMarkup[] buttons;
-                        if (nPos == 0) {
-                            ReplyMarkup[] temp = {
-                                ReplyMarkup.getButton("Conferma", "conf"),
-                                ReplyMarkup.getButton("Successivo", "succ")
-                            };
-                            buttons = temp;
-                        } else if (nPos == sr.places.size() - 1) {
-                            ReplyMarkup[] temp = {
-                                ReplyMarkup.getButton("Conferma", "conf"),
-                                ReplyMarkup.getButton("Successivo", "succ")
-                            };
-                            buttons = temp;
-                        } else {
-                            ReplyMarkup[] temp = {
-                                ReplyMarkup.getButton("Precendente", "prec"),
-                                ReplyMarkup.getButton("Conferma", "conf"),
-                                ReplyMarkup.getButton("Successivo", "succ")
-                            };
-                            buttons = temp;
-                        }
-
-                        u.setnLoc(nPos);
-                        u.setLat(Double.valueOf(place.getLat()));
-                        u.setLon(Double.valueOf(place.getLon()));
-
-                        userList.updateUser(u);
-                        api.sendPhotoReplyMarkup(query.message.chat, photo.toString(), msg, buttons);
+            SearchResults sr = OsmAPI.searchPlace(u.getPlaceName());
+            if (sr.places != null) {
+                nPos++;
+                if (nPos >= 0 && nPos < sr.places.size()) {
+                    Place place = sr.places.get(nPos++);
+                    String msg = "Risultato " + (u.getnLoc() + 1) + " di " + sr.places.size() + " risultati trovati";
+                    URL photo = mapQuest.getImage(place.getLat(), place.getLon());
+                    ReplyMarkup[] buttons;
+                    if (nPos == 0) {
+                        ReplyMarkup[] temp = {
+                            ReplyMarkup.getButton("Conferma", "conf"),
+                            ReplyMarkup.getButton("Successivo", "succ")
+                        };
+                        buttons = temp;
+                    } else if (nPos == sr.places.size() - 1) {
+                        ReplyMarkup[] temp = {
+                            ReplyMarkup.getButton("Conferma", "conf"),
+                            ReplyMarkup.getButton("Successivo", "succ")
+                        };
+                        buttons = temp;
+                    } else {
+                        ReplyMarkup[] temp = {
+                            ReplyMarkup.getButton("Precendente", "prec"),
+                            ReplyMarkup.getButton("Conferma", "conf"),
+                            ReplyMarkup.getButton("Successivo", "succ")
+                        };
+                        buttons = temp;
                     }
+
+                    u.setnLoc(nPos);
+                    u.setLat(Double.valueOf(place.getLat()));
+                    u.setLon(Double.valueOf(place.getLon()));
+
+                    userList.updateUser(u);
+                    api.sendPhotoReplyMarkup(query.message.chat, photo.toString(), msg, buttons);
                 }
+            }
+
+            if (query.data.equals("succ")) {
+
             }
 
         } catch (ParserConfigurationException | SAXException | IOException ex) {
