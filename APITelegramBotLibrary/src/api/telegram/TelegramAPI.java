@@ -1,6 +1,7 @@
 package api.telegram;
 
 import java.io.IOException;
+import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -71,5 +72,24 @@ public class TelegramAPI {
 
     public void sendPhoto(Chat chat, String photo, String caption) throws IOException {
         getStream("sendPhoto?chat_id=" + chat.id + "&photo=" + URLEncoder.encode(photo, StandardCharsets.UTF_8) + "&caption=" + URLEncoder.encode(caption, StandardCharsets.UTF_8));
+    }
+
+    public void sendMessageReplyMarkup(Chat chat, String text) throws IOException {
+
+        StringWriter sw = new StringWriter();
+        JSONWriter writer = new JSONWriter(sw);
+        writer.object().key("inline_keyboard").array().array()
+                .object().key("text").value("yes")
+                .key("callback_data")
+                .value("x")
+                .endObject()
+                .endArray()
+                .endArray()
+                .endObject();
+
+        String prova = sw.toString();
+        System.out.println(prova);
+        getStream("sendMessage?chat_id=" + chat.id + "&text=" + URLEncoder.encode(text, StandardCharsets.UTF_8) + "&reply_markup=" + prova);
+
     }
 }

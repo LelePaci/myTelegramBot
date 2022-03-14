@@ -21,15 +21,6 @@ public class Message {
     public String text;
     public Entity[] entities;
 
-    public Message() {
-        message_id = null;
-        from = null;
-        chat = null;
-        date = null;
-        text = null;
-        entities = null;
-    }
-
     public Message(JSONObject obj) {
         message_id = obj.has("message_id") ? obj.getInt("message_id") : null;
         from = obj.has("from") ? new From(obj.getJSONObject("from")) : null;
@@ -68,48 +59,6 @@ public class Message {
             }
         }
         return toReturn;
-    }
-
-    public class From {
-
-        public Integer id;
-        public Boolean is_bot;
-        public String first_name;
-        public String username;
-        public String language_code;
-
-        public From() {
-            id = null;
-            is_bot = null;
-            first_name = null;
-            username = null;
-            language_code = null;
-        }
-
-        public From(JSONObject obj) {
-            id = obj.has("id") ? obj.getInt("id") : null;
-            is_bot = obj.has("is_bot") ? obj.getBoolean("is_bot") : null;
-            first_name = obj.has("first_name") ? obj.getString("first_name") : null;
-            username = obj.has("username") ? obj.getString("username") : null;
-            language_code = obj.has("language_code") ? obj.getString("language_code") : null;
-        }
-
-        public From(Integer id, Boolean is_bot, String first_name, String username, String language_code) {
-            this.id = id;
-            this.is_bot = is_bot;
-            this.first_name = first_name;
-            this.username = username;
-            this.language_code = language_code;
-        }
-
-        @Override
-        public String toString() {
-            return "id: " + id + "\n"
-                    + "is_bot: " + is_bot + "\n"
-                    + "first_name: " + first_name + "\n"
-                    + "username: " + username + "\n"
-                    + "language_code: " + language_code;
-        }
     }
 
     public class Entity {

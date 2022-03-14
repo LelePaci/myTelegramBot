@@ -31,16 +31,14 @@ public class ThreadTelegram extends Thread {
     private UserList userList;
     private MapQuestAPI mapQuest;
 
-    public ThreadTelegram(Tokens token) {
+    public ThreadTelegram(String token, MapQuestAPI mapQuest, MyFile fileUsers) {
         try {
-            api = new TelegramAPI(token.getTelegram());
-            running = true;
-            fileUsers = new MyFile("users.csv");
-            if (!fileUsers.exists()) {
-                fileUsers.createFile();
-            }
-            userList = new UserList(fileUsers);
-            mapQuest = new MapQuestAPI(token.getMapQuest());
+            this.api = new TelegramAPI(token);
+            this.fileUsers = fileUsers;
+            this.userList = new UserList(fileUsers);
+            this.mapQuest = mapQuest;
+
+            this.running = true;
         } catch (IOException ex) {
             Logger.getLogger(ThreadTelegram.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -55,13 +53,22 @@ public class ThreadTelegram extends Thread {
                     long lastOffset = updates.get(updates.size() - 1).update_id;
                     api.changeOffset(lastOffset + 1);
                     for (int i = 0; i < updates.size(); i++) {
+                        Update update = updates.get(i);
                         try {
-                            if (updates.get(i).message.text != null) {
-                                readMessages(updates.get(i).message);
+                            if (update.message != null) {
+                                readMessages(update.message);
+                            } else if (update.callbackQuery != null) {
+                                System.out.println(update.callbackQuery.data);
                             }
                         } catch (Exception e) {
-                            System.out.println(e);
-                            api.sendMessage(updates.get(i).message.chat, "Qualcosa è andato storto, riprova");
+                            Logger.getLogger(ThreadTelegram.class.getName()).log(Level.SEVERE, null, e);
+                            //System.out.println(e);
+                            String errorMessage = "Qualcosa è andato storto, riprova";
+                            if (update.message != null) {
+                                api.sendMessage(update.message.chat, errorMessage);
+                            } else if (update.callbackQuery != null) {
+                                api.sendMessage(update.callbackQuery.message.chat, errorMessage);
+                            }
                         }
                     }
                 }
@@ -74,6 +81,11 @@ public class ThreadTelegram extends Thread {
 
     private void readMessages(Message message) {
         String text = message.text;
+//        try {
+//            api.sendMessageReplyMarkup(message.chat, "prova");
+//        } catch (IOException ex) {
+//            Logger.getLogger(ThreadTelegram.class.getName()).log(Level.SEVERE, null, ex);
+//        }
         if (text.startsWith("/")) {
             int firstSpace = text.indexOf(" ");
             if (firstSpace != -1) {
@@ -90,12 +102,12 @@ public class ThreadTelegram extends Thread {
                                 if (!userList.userExists(message.chat)) {
                                     userList.addUser(message.chat, place);
                                     mapQuest.getImage(place.getLat(), place.getLon());
-                                    //api.sendMessage(message.chat, "Utente registrato");
+                                    api.sendMessage(message.chat, "Utente registrato");
                                 } else {
                                     userList.updateUser(message.chat, sr.places.get(0));
                                     api.sendMessage(message.chat, "Utente modificato");
                                     URL photo = mapQuest.getImage(place.getLat(), place.getLon());
-                                    api.sendPhoto(message.chat, photo.toString(), "Risultato trovato");
+                                    //api.sendPhoto(message.chat, photo.toString(), "Risultato trovato");
                                 }
                             } else {
                                 api.sendMessage(message.chat, "Nessun risultato trovato");
