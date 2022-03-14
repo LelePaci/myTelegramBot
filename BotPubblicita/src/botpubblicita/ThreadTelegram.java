@@ -30,6 +30,7 @@ public class ThreadTelegram extends Thread {
     private MyFile fileUsers;
     private UserList userList;
     private MapQuestAPI mapQuest;
+    private OpenStreetMapAPI OsmAPI;
 
     public ThreadTelegram(String token, MapQuestAPI mapQuest, MyFile fileUsers) {
         try {
@@ -37,6 +38,7 @@ public class ThreadTelegram extends Thread {
             this.fileUsers = fileUsers;
             this.userList = new UserList(fileUsers);
             this.mapQuest = mapQuest;
+            this.OsmAPI = new OpenStreetMapAPI();
 
             this.running = true;
         } catch (IOException ex) {
@@ -49,7 +51,7 @@ public class ThreadTelegram extends Thread {
         while (running) {
             try {
                 List<Update> updates = api.getUpdates();
-                if (updates.size() > 0) {
+                if (!updates.isEmpty()) {
                     long lastOffset = updates.get(updates.size() - 1).update_id;
                     api.changeOffset(lastOffset + 1);
                     for (int i = 0; i < updates.size(); i++) {
@@ -58,11 +60,11 @@ public class ThreadTelegram extends Thread {
                             if (update.message != null) {
                                 readMessages(update.message);
                             } else if (update.callbackQuery != null) {
-                                System.out.println(update.callbackQuery.data);
+                                readCallbackQuery(update.callbackQuery);
                             }
                         } catch (Exception e) {
-                            Logger.getLogger(ThreadTelegram.class.getName()).log(Level.SEVERE, null, e);
-                            //System.out.println(e);
+                            //Logger.getLogger(ThreadTelegram.class.getName()).log(Level.SEVERE, null, e);
+                            System.out.println(e);
                             String errorMessage = "Qualcosa è andato storto, riprova";
                             if (update.message != null) {
                                 api.sendMessage(update.message.chat, errorMessage);
@@ -80,16 +82,6 @@ public class ThreadTelegram extends Thread {
     }
 
     private void readMessages(Message message) {
-//        try {
-//            ReplyMarkup[] buttons = {
-//                ReplyMarkup.getButton("Precedente", "prec"),
-//                ReplyMarkup.getButton("Conferma", "conf"),
-//                ReplyMarkup.getButton("Successivo", "succ")
-//            };
-//            api.sendMessageReplyMarkup(message.chat, "prova", buttons);
-//        } catch (IOException ex) {
-//            Logger.getLogger(ThreadTelegram.class.getName()).log(Level.SEVERE, null, ex);
-//        }
         String text = message.text;
         Chat chat = message.chat;
         if (text.startsWith("/")) {
@@ -98,22 +90,34 @@ public class ThreadTelegram extends Thread {
                 String cmd = text.substring(1, firstSpace);
                 switch (cmd) {
                     case "citta":
-                        OpenStreetMapAPI map = new OpenStreetMapAPI();
                         text = text.substring(firstSpace + 1, text.length());
                         System.out.println("text: " + text);
                         try {
-                            SearchResults sr = map.searchPlace(text);
+                            SearchResults sr = OsmAPI.searchPlace(text);
                             if (sr.places != null) {
-                                Place place = sr.places.get(0);
                                 if (!userList.userExists(message.chat)) {
-                                    userList.addUser(message.chat, place);
-                                    mapQuest.getImage(place.getLat(), place.getLon());
-                                    api.sendMessage(message.chat, "Utente registrato");
-                                } else {
-                                    userList.updateUser(message.chat, sr.places.get(0), 1);
-                                    api.sendMessage(message.chat, "Utente modificato");
+                                    Place place = sr.places.get(0);
+                                    userList.addUser(message.chat, text, place);
+                                    String replyMessage = "";
+                                    ReplyMarkup[] buttons;
+                                    if (sr.places.size() > 1) {
+                                        ReplyMarkup[] temp = {
+                                            ReplyMarkup.getButton("Conferma", "conf"),
+                                            ReplyMarkup.getButton("Successivo", "succ")
+                                        };
+                                        buttons = temp;
+                                    } else {
+                                        ReplyMarkup[] temp = {
+                                            ReplyMarkup.getButton("Conferma", "conf")
+                                        };
+                                        buttons = temp;
+                                    }
+                                    User u = userList.getUserByChatID(message.chat.id);
+                                    String msg = "Risultato " + (u.getnLoc() + 1) + " di " + sr.places.size() + " risultati trovati";
                                     URL photo = mapQuest.getImage(place.getLat(), place.getLon());
-                                    //api.sendPhoto(message.chat, photo.toString(), "Risultato trovato");
+                                    api.sendPhotoReplyMarkup(message.chat, photo.toString(), msg, buttons);
+                                } else {
+//                                    //UPDATE ->
                                 }
                             } else {
                                 api.sendMessage(message.chat, "Nessun risultato trovato");
@@ -131,6 +135,59 @@ public class ThreadTelegram extends Thread {
                     Logger.getLogger(ThreadTelegram.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
+        }
+    }
+
+    private void readCallbackQuery(CallbackQuery query) {
+        User u = userList.getUserByChatID(query.message.chat.id);
+        System.out.println(query.data);
+        int nPos = u.getnLoc();
+        try {
+            if (query.data.equals("conf")) {
+                api.sendMessage(query.message.chat, "Utente registrato");
+            }
+            if (query.data.equals("succ")) {
+                SearchResults sr = OsmAPI.searchPlace(u.getPlaceName());
+                if (sr.places != null) {
+                    nPos++;
+                    if (nPos >= 0 && nPos < sr.places.size()) {
+                        Place place = sr.places.get(nPos++);
+                        String msg = "Risultato " + (u.getnLoc() + 1) + " di " + sr.places.size() + " risultati trovati";
+                        URL photo = mapQuest.getImage(place.getLat(), place.getLon());
+                        ReplyMarkup[] buttons;
+                        if (nPos == 0) {
+                            ReplyMarkup[] temp = {
+                                ReplyMarkup.getButton("Conferma", "conf"),
+                                ReplyMarkup.getButton("Successivo", "succ")
+                            };
+                            buttons = temp;
+                        } else if (nPos == sr.places.size() - 1) {
+                            ReplyMarkup[] temp = {
+                                ReplyMarkup.getButton("Conferma", "conf"),
+                                ReplyMarkup.getButton("Successivo", "succ")
+                            };
+                            buttons = temp;
+                        } else {
+                            ReplyMarkup[] temp = {
+                                ReplyMarkup.getButton("Precendente", "prec"),
+                                ReplyMarkup.getButton("Conferma", "conf"),
+                                ReplyMarkup.getButton("Successivo", "succ")
+                            };
+                            buttons = temp;
+                        }
+
+                        u.setnLoc(nPos);
+                        u.setLat(Double.valueOf(place.getLat()));
+                        u.setLon(Double.valueOf(place.getLon()));
+
+                        userList.updateUser(u);
+                        api.sendPhotoReplyMarkup(query.message.chat, photo.toString(), msg, buttons);
+                    }
+                }
+            }
+
+        } catch (ParserConfigurationException | SAXException | IOException ex) {
+            Logger.getLogger(ThreadTelegram.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }

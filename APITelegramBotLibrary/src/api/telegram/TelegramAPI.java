@@ -70,12 +70,16 @@ public class TelegramAPI {
         getStream("sendMessage?chat_id=" + chat.id + "&text=" + URLEncoder.encode(text, StandardCharsets.UTF_8));
     }
 
+    public void sendMessageReplyMarkup(Chat chat, String text, ReplyMarkup[] buttons) throws IOException {
+        getStream("sendMessage?chat_id=" + chat.id + "&text=" + URLEncoder.encode(text, StandardCharsets.UTF_8) + "&reply_markup=" + ReplyMarkup.getJSONReplyMarkup("inline_keyboard", buttons));
+    }
+
     public void sendPhoto(Chat chat, String photo, String caption) throws IOException {
         getStream("sendPhoto?chat_id=" + chat.id + "&photo=" + URLEncoder.encode(photo, StandardCharsets.UTF_8) + "&caption=" + URLEncoder.encode(caption, StandardCharsets.UTF_8));
     }
 
-    public void sendMessageReplyMarkup(Chat chat, String text, ReplyMarkup[] buttons) throws IOException {
-        getStream("sendMessage?chat_id=" + chat.id + "&text=" + URLEncoder.encode(text, StandardCharsets.UTF_8) + "&reply_markup=" + ReplyMarkup.getJSONReplyMarkup("inline_keyboard", buttons));
-
+    public void sendPhotoReplyMarkup(Chat chat, String photo, String caption, ReplyMarkup[] buttons) throws IOException {
+        getStream("sendPhoto?chat_id=" + chat.id + "&photo=" + URLEncoder.encode(photo, StandardCharsets.UTF_8) + "&caption=" + URLEncoder.encode(caption, StandardCharsets.UTF_8) + "&reply_markup=" + ReplyMarkup.getJSONReplyMarkup("inline_keyboard", buttons));
     }
+
 }

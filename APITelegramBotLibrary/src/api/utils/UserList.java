@@ -39,10 +39,6 @@ public class UserList {
         }
     }
 
-    private void saveList() {
-
-    }
-
     public boolean userExists(Chat chat) throws IOException {
         String[] lines = file.read();
         for (int i = 0; i < lines.length; i++) {
@@ -55,17 +51,17 @@ public class UserList {
         return false;
     }
 
-    public void addUser(Chat chat, Place place) throws IOException {
-        User u = new User(chat.id, chat.first_name, Double.valueOf(place.getLat()), Double.valueOf(place.getLon()), 0);
+    public void addUser(Chat chat, String placeName, Place place) throws IOException {
+        User u = new User(chat.id, chat.first_name, placeName, Double.valueOf(place.getLat()), Double.valueOf(place.getLon()), 0);
         users.add(u);
         file.append(u.toCSV());
     }
 
-    public void updateUser(Chat chat, Place place, int nLoc) throws IOException {
+    public void updateUser(Chat chat, String placeName, Place place, int nLoc) throws IOException {
         for (int i = 0; i < users.size(); i++) {
             User u = users.get(i);
             if (u.getChatID() == chat.id) {
-                users.set(i, new User(chat.id, chat.first_name, Double.valueOf(place.getLat()), Double.valueOf(place.getLon()), nLoc));
+                users.set(i, new User(chat.id, chat.first_name, placeName, Double.valueOf(place.getLat()), Double.valueOf(place.getLon()), nLoc));
                 break;
             }
         }
@@ -75,5 +71,30 @@ public class UserList {
             toWrite[i] = users.get(i).toCSV();
         }
         file.write(toWrite);
+    }
+
+    public void updateUser(User user) throws IOException {
+        for (int i = 0; i < users.size(); i++) {
+            User u = users.get(i);
+            if (u.getChatID() == user.getChatID()) {
+                users.set(i, new User(user.getChatID(), user.getFirstName(), user.getPlaceName(), user.getLat(), user.getLon(), user.getnLoc()));
+                break;
+            }
+        }
+
+        String[] toWrite = new String[users.size()];
+        for (int i = 0; i < users.size(); i++) {
+            toWrite[i] = users.get(i).toCSV();
+        }
+        file.write(toWrite);
+    }
+
+    public User getUserByChatID(long chatID) {
+        for (int i = 0; i < users.size(); i++) {
+            if (users.get(i).getChatID() == chatID) {
+                return users.get(i);
+            }
+        }
+        return null;
     }
 }

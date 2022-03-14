@@ -13,22 +13,52 @@ public class User {
 
     private long chatID;
     private String firstName;
+    private String placeName;
     private double lat;
     private double lon;
+    private int nLoc;
 
-    public User(long chatID, String firstName, double lat, double lon) {
+    public User(long chatID, String firstName, String placeName, double lat, double lon, int nLoc) {
         this.chatID = chatID;
         this.firstName = firstName;
+        this.placeName = placeName;
         this.lat = lat;
         this.lon = lon;
+        this.nLoc = nLoc;
     }
 
     public User(String CSV) {
         String[] cells = CSV.split(";");
         this.chatID = Long.valueOf(cells[0]);
         this.firstName = cells[1];
-        this.lat = Double.valueOf(cells[2]);
+        this.placeName = cells[2];
         this.lat = Double.valueOf(cells[3]);
+        this.lat = Double.valueOf(cells[4]);
+        this.nLoc = Integer.valueOf(cells[5]);
+    }
+
+    public void setChatID(long chatID) {
+        this.chatID = chatID;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public void setPlaceName(String placeName) {
+        this.placeName = placeName;
+    }
+
+    public void setLat(double lat) {
+        this.lat = lat;
+    }
+
+    public void setLon(double lon) {
+        this.lon = lon;
+    }
+
+    public void setnLoc(int nLoc) {
+        this.nLoc = nLoc;
     }
 
     public long getChatID() {
@@ -39,6 +69,10 @@ public class User {
         return firstName;
     }
 
+    public String getPlaceName() {
+        return placeName;
+    }
+
     public double getLat() {
         return lat;
     }
@@ -47,7 +81,11 @@ public class User {
         return lon;
     }
 
+    public int getnLoc() {
+        return nLoc;
+    }
+
     public String toCSV() {
-        return chatID + ";" + firstName + ";" + lat + ";" + lon;
+        return chatID + ";" + firstName + ";" + placeName + ";" + lat + ";" + lon + ";" + nLoc;
     }
 }
