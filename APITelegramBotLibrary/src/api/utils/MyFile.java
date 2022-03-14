@@ -24,7 +24,6 @@ public class MyFile {
 
     public MyFile(File file) throws FileNotFoundException {
         this.file = file;
-
     }
 
     public MyFile(String path) throws FileNotFoundException {

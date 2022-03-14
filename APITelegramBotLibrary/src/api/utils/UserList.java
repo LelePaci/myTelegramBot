@@ -56,16 +56,17 @@ public class UserList {
     }
 
     public void addUser(Chat chat, Place place) throws IOException {
-        User u = new User(chat.id, chat.first_name, Double.valueOf(place.getLat()), Double.valueOf(place.getLon()));
+        User u = new User(chat.id, chat.first_name, Double.valueOf(place.getLat()), Double.valueOf(place.getLon()), 0);
         users.add(u);
         file.append(u.toCSV());
     }
 
-    public void updateUser(Chat chat, Place place) throws IOException {
+    public void updateUser(Chat chat, Place place, int nLoc) throws IOException {
         for (int i = 0; i < users.size(); i++) {
             User u = users.get(i);
             if (u.getChatID() == chat.id) {
-                users.set(i, new User(chat.id, chat.first_name, Double.valueOf(place.getLat()), Double.valueOf(place.getLon())));
+                users.set(i, new User(chat.id, chat.first_name, Double.valueOf(place.getLat()), Double.valueOf(place.getLon()), nLoc));
+                break;
             }
         }
 

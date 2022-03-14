@@ -74,22 +74,8 @@ public class TelegramAPI {
         getStream("sendPhoto?chat_id=" + chat.id + "&photo=" + URLEncoder.encode(photo, StandardCharsets.UTF_8) + "&caption=" + URLEncoder.encode(caption, StandardCharsets.UTF_8));
     }
 
-    public void sendMessageReplyMarkup(Chat chat, String text) throws IOException {
-
-        StringWriter sw = new StringWriter();
-        JSONWriter writer = new JSONWriter(sw);
-        writer.object().key("inline_keyboard").array().array()
-                .object().key("text").value("yes")
-                .key("callback_data")
-                .value("x")
-                .endObject()
-                .endArray()
-                .endArray()
-                .endObject();
-
-        String prova = sw.toString();
-        System.out.println(prova);
-        getStream("sendMessage?chat_id=" + chat.id + "&text=" + URLEncoder.encode(text, StandardCharsets.UTF_8) + "&reply_markup=" + prova);
+    public void sendMessageReplyMarkup(Chat chat, String text, ReplyMarkup[] buttons) throws IOException {
+        getStream("sendMessage?chat_id=" + chat.id + "&text=" + URLEncoder.encode(text, StandardCharsets.UTF_8) + "&reply_markup=" + ReplyMarkup.getJSONReplyMarkup("inline_keyboard", buttons));
 
     }
 }

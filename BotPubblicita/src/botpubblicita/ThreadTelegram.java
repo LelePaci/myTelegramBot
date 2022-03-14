@@ -80,12 +80,18 @@ public class ThreadTelegram extends Thread {
     }
 
     private void readMessages(Message message) {
-        String text = message.text;
 //        try {
-//            api.sendMessageReplyMarkup(message.chat, "prova");
+//            ReplyMarkup[] buttons = {
+//                ReplyMarkup.getButton("Precedente", "prec"),
+//                ReplyMarkup.getButton("Conferma", "conf"),
+//                ReplyMarkup.getButton("Successivo", "succ")
+//            };
+//            api.sendMessageReplyMarkup(message.chat, "prova", buttons);
 //        } catch (IOException ex) {
 //            Logger.getLogger(ThreadTelegram.class.getName()).log(Level.SEVERE, null, ex);
 //        }
+        String text = message.text;
+        Chat chat = message.chat;
         if (text.startsWith("/")) {
             int firstSpace = text.indexOf(" ");
             if (firstSpace != -1) {
@@ -104,7 +110,7 @@ public class ThreadTelegram extends Thread {
                                     mapQuest.getImage(place.getLat(), place.getLon());
                                     api.sendMessage(message.chat, "Utente registrato");
                                 } else {
-                                    userList.updateUser(message.chat, sr.places.get(0));
+                                    userList.updateUser(message.chat, sr.places.get(0), 1);
                                     api.sendMessage(message.chat, "Utente modificato");
                                     URL photo = mapQuest.getImage(place.getLat(), place.getLon());
                                     //api.sendPhoto(message.chat, photo.toString(), "Risultato trovato");
