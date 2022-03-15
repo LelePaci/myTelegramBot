@@ -60,8 +60,13 @@ public class UserList {
     public void updateUser(Chat chat, String placeName, Place place, int nLoc) throws IOException {
         for (int i = 0; i < users.size(); i++) {
             User u = users.get(i);
+
             if (u.getChatID() == chat.id) {
-                users.set(i, new User(chat.id, chat.first_name, placeName, Double.valueOf(place.getLat()), Double.valueOf(place.getLon()), nLoc));
+                u.setPlaceName(placeName);
+                u.setLat(Double.valueOf(place.getLat()));
+                u.setLon(Double.valueOf(place.getLon()));
+                u.setnLoc(nLoc);
+                //users.set(i, new User(chat.id, chat.first_name, placeName, Double.valueOf(place.getLat()), Double.valueOf(place.getLon()), nLoc));
                 break;
             }
         }

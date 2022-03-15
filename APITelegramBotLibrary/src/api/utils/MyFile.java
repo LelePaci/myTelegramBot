@@ -13,6 +13,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -33,12 +35,12 @@ public class MyFile {
     public File getFile() {
         return file;
     }
-    
-    public boolean exists(){
+
+    public boolean exists() {
         return file.exists();
     }
-    
-    public void createFile() throws IOException{
+
+    public void createFile() throws IOException {
         file.createNewFile();
     }
 
@@ -51,7 +53,9 @@ public class MyFile {
 
     public synchronized void write(String[] s) throws IOException {
         BufferedWriter bw = new BufferedWriter(new FileWriter(file));
+
         for (int i = 0; i < s.length; i++) {
+
             bw.write(s[i]);
             bw.newLine();
         }
