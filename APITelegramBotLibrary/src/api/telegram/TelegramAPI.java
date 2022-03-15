@@ -82,4 +82,7 @@ public class TelegramAPI {
         getStream("sendPhoto?chat_id=" + chat.id + "&photo=" + URLEncoder.encode(photo, StandardCharsets.UTF_8) + "&caption=" + URLEncoder.encode(caption, StandardCharsets.UTF_8) + "&reply_markup=" + ReplyMarkup.getJSONReplyMarkup("inline_keyboard", buttons));
     }
 
+    public void deleteMessage(Chat chat, long messageID) throws IOException {
+        getStream("deleteMessage?chat_id=" + chat.id + "&message_id=" + messageID);
+    }
 }
