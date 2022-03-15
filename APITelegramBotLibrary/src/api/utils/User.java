@@ -33,7 +33,7 @@ public class User {
         this.firstName = cells[1];
         this.placeName = cells[2];
         this.lat = Double.valueOf(cells[3]);
-        this.lat = Double.valueOf(cells[4]);
+        this.lon = Double.valueOf(cells[4]);
         this.nLoc = Integer.valueOf(cells[5]);
     }
 
