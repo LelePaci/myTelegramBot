@@ -163,7 +163,11 @@ public class ThreadTelegram extends Thread {
         int nPos = u.getnLoc();
         try {
             if (query.data.equals("conf")) {
-                api.sendMessage(query.message.chat, "Utente registrato");
+                if (userList.userExists(query.message.chat)) {
+                    api.sendMessage(query.message.chat, "Posizione salvata, utente modificato");
+                } else {
+                    api.sendMessage(query.message.chat, "Posizione salvata, utente registrato");
+                }
             } else {
                 SearchResults sr = OsmAPI.searchPlace(u.getPlaceName());
                 if (sr.places != null) {

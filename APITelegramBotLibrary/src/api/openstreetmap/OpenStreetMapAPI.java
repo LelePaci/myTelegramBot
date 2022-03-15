@@ -5,12 +5,10 @@
  */
 package api.openstreetmap;
 
-import java.io.File;
+import java.awt.geom.Point2D;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.StringReader;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -29,8 +27,8 @@ import org.xml.sax.SAXException;
  */
 public class OpenStreetMapAPI {
 
-    private String baseURL;
-    private String addonURL;
+    private final String baseURL;
+    private final String addonURL;
 
     public OpenStreetMapAPI() {
         this.baseURL = "https://nominatim.openstreetmap.org/search?q=";
@@ -53,5 +51,21 @@ public class OpenStreetMapAPI {
         Document doc = builder.parse(new InputSource(new StringReader(xml)));
         SearchResults sr = new SearchResults((Element) doc.getElementsByTagName("searchresults").item(0));
         return sr;
+    }
+
+    public static double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+        int r = 6371;
+        Double latDistance = toRad(lat2 - lat1);
+        Double lonDistance = toRad(lon2 - lon1);
+        Double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+                + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2))
+                * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+        Double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        Double distance = r * c;
+        return distance;
+    }
+
+    private static Double toRad(Double value) {
+        return value * Math.PI / 180;
     }
 }
