@@ -69,6 +69,10 @@ public class TelegramAPI {
     public void sendMessage(Chat chat, String text) throws IOException {
         getStream("sendMessage?chat_id=" + chat.id + "&text=" + URLEncoder.encode(text, StandardCharsets.UTF_8));
     }
+    
+    public void sendMessage(long id, String text) throws IOException {
+        getStream("sendMessage?chat_id=" + id + "&text=" + URLEncoder.encode(text, StandardCharsets.UTF_8));
+    }
 
     public void sendMessageReplyMarkup(Chat chat, String text, ReplyMarkup[] buttons) throws IOException {
         getStream("sendMessage?chat_id=" + chat.id + "&text=" + URLEncoder.encode(text, StandardCharsets.UTF_8) + "&reply_markup=" + ReplyMarkup.getJSONReplyMarkup("inline_keyboard", buttons));

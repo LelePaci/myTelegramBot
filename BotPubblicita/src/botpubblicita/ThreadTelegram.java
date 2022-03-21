@@ -177,7 +177,6 @@ public class ThreadTelegram extends Thread {
                     if (query.data.equals("prec")) {
                         nPos--;
                     }
-                    System.out.println("new pos: " + nPos);
                     if (nPos >= 0 && nPos < sr.places.size()) {
                         Place place = sr.places.get(nPos);
                         String msg = "Risultato " + (nPos + 1) + " di " + sr.places.size() + " risultati trovati";
@@ -213,6 +212,18 @@ public class ThreadTelegram extends Thread {
             }
             api.deleteMessage(query.message.chat, query.message.message_id);
         } catch (ParserConfigurationException | SAXException | IOException ex) {
+            Logger.getLogger(ThreadTelegram.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public synchronized UserList getUserList() {
+        return userList;
+    }
+
+    public void sendPubblicita(long id, String text) {
+        try {
+            api.sendMessage(id, text);
+        } catch (IOException ex) {
             Logger.getLogger(ThreadTelegram.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

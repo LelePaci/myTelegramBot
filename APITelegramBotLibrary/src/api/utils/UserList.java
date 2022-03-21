@@ -102,4 +102,8 @@ public class UserList {
         }
         return null;
     }
+    
+    public List<User> getList(){
+        return users;
+    }
 }
